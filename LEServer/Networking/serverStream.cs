@@ -1,0 +1,118 @@
+﻿using System;
+using System.IO;
+using System.Threading;
+
+namespace LE {
+    internal class serverStream : Stream {
+        public static byte[] ServerEncryptionKey = new byte[] {
+            0x16, 0xD8, 0x68, 0x8E, 0xF0, 0x1B, 0xE7, 0x66, 0x48, 0xC8, 0x94, 0x77,
+            0x8F, 0xAD, 0xFE, 0x5D
+        };
+
+        public static byte[] MasterKey = new byte[] {
+            0xA9, 0x89, 0x96, 0x34, 0xBB, 0x64, 0x0D, 0x8D, 0x3C, 0x72, 0x7A, 0xC2,
+            0xD4, 0x60, 0x41, 0x68
+        };
+
+        public Stream stream;
+        public serverStream(Stream s) {
+            stream = s;
+        }
+
+        public override void Flush() {
+            stream.Flush();  
+        }
+        
+        public override int Read(byte[] buffer, int offset, int count) {
+            byte[] Data = new byte[count];
+            int num = stream.Read(Data, 0, count);
+            while (num != count) {
+                int num2 = stream.Read(Data, num, count - num);
+                if (num2 <= 0) 
+                    break;
+                num += num2;
+            }
+            
+            Crypto.RC4(ref Data, ServerEncryptionKey);
+            Array.Reverse(Data);
+
+            for (int i = 0; i < count; i++)
+                Data[i] ^= (byte)0x31;
+
+            Crypto.RC4(ref Data, MasterKey);
+            Array.Reverse(Data);
+            
+            Buffer.BlockCopy(Data, 0, buffer, offset, num);
+            return num;
+        }
+
+        public override long Seek(long offset, SeekOrigin origin) {
+            return stream.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value) {
+            stream.SetLength(value);
+        }
+        
+        public override void Write(byte[] buffer, int offset, int count) {
+            byte[] Data = new byte[count];
+            Buffer.BlockCopy(buffer, offset, Data, 0, count);
+
+            Crypto.RC4(ref Data, ServerEncryptionKey);
+            Array.Reverse(Data);
+
+            for (int i = 0; i < count; i++)
+                Data[i] ^= (byte)0x31;
+
+            Crypto.RC4(ref Data, MasterKey);
+            Array.Reverse(Data);
+
+            byte[] tmp = new byte[ClientHandler.MaxSendRec];
+            for (int i = 0; i * ClientHandler.MaxSendRec < Data.Length; i++) {
+                int Remaining = (Data.Length - (i * ClientHandler.MaxSendRec));
+
+                if (Remaining >= ClientHandler.MaxSendRec) {
+                    Buffer.BlockCopy(Data, (i * ClientHandler.MaxSendRec), tmp, 0, ClientHandler.MaxSendRec);
+                    stream.Write(tmp, 0, ClientHandler.MaxSendRec);
+                }
+                else {
+                    Buffer.BlockCopy(Data, (i * ClientHandler.MaxSendRec), tmp, 0, Remaining);
+                    stream.Write(tmp, 0, Remaining);
+
+                }
+            }
+        }
+
+        public override bool CanRead {
+            get {
+                return stream.CanRead;
+            }
+        }
+
+        public override bool CanSeek {
+            get {
+                return stream.CanSeek;
+            }
+        }
+
+        public override bool CanWrite {
+            get {
+                return stream.CanWrite;
+            }
+        }
+
+        public override long Length {
+            get {
+                return stream.Length;
+            }
+        }
+
+        public override long Position {
+            get {
+                return stream.Position;
+            } set {
+                stream.Position = Position;
+            }
+        }
+    }
+}
