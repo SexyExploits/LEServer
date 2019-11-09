@@ -41,7 +41,7 @@ namespace LE {
         }
 
         static void Main(string[] Args) {
-            //byte[] IP = { 192,99,71,19 };
+            //byte[] IP = { 24, 183, 227, 58 };
             //EncryptIp(IP);
             //EncryptPort(4168, 0x9C);
 

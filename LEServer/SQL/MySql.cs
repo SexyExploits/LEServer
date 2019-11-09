@@ -261,6 +261,7 @@ namespace LE {
                             ClientObj.actioncompleted = (CLIENT_ACTION_COMPLETED)Reader["action_completed"];
                             ClientObj.kvstatus = (CLIENT_KVSTATUS)Reader["kvstatus"];
                             ClientObj.bannedreason = (string)Reader["banned_reason"];
+                            ClientObj.discord = (string)Reader["discord"];
                             ClientObj.titleid = (string)Reader["titleid"];
                             ClientObj.challengesran = (int)Reader["challenges_ran"];
                             ClientObj.ui_colors = (string)Reader["ui_colors"];
@@ -293,8 +294,10 @@ namespace LE {
 
                     JObject DiscordObj = new JObject();
                     DiscordObj.Add("id", "0");
-                    DiscordObj.Add("primary", "true");
+                    DiscordObj.Add("primary", "false");
                     DiscordObj.Add("verified", "false");
+                    DiscordObj.Add("popup", "false");
+                    DiscordObj.Add("token", "");
                     Cmd.Parameters.AddWithValue("@discord", JsonConvert.SerializeObject(DiscordObj));
                     Cmd.ExecuteNonQuery();
                 }
@@ -355,7 +358,7 @@ namespace LE {
                 DbConnection.Connect(DbCon);
                 using (var Cmd = DbCon.CreateCommand()) {
                     Cmd.CommandTimeout = 10;
-                    Cmd.CommandText = string.Format("UPDATE clients SET sessionkey=@sessionkey, time=@time, last_login=@last_login, online=@online, auth_status=@auth_status, kvstatus=@kvstatus, ip=@ip, titleid=@titleid, console_type=@console_type, gamertag=@gamertag, kvserial=@kvserial, map_cordinates=@map_cordinates, banned_reason=@banned_reason, challenges_ran=@challenges_ran, ui_colors=@ui_colors WHERE (cpukey=@key OR sessionkey=@key)");
+                    Cmd.CommandText = string.Format("UPDATE clients SET sessionkey=@sessionkey, time=@time, last_login=@last_login, online=@online, auth_status=@auth_status, kvstatus=@kvstatus, ip=@ip, titleid=@titleid, console_type=@console_type, gamertag=@gamertag, kvserial=@kvserial, map_cordinates=@map_cordinates, banned_reason=@banned_reason, discord=@discord, challenges_ran=@challenges_ran, ui_colors=@ui_colors WHERE (cpukey=@key OR sessionkey=@key)");
                     Cmd.Parameters.AddWithValue("@cpukey", ClientObj.cpukey);
                     Cmd.Parameters.AddWithValue("@sessionkey", ClientObj.sessiontoken);
                     Cmd.Parameters.AddWithValue("@time", ClientObj.time);
@@ -368,6 +371,7 @@ namespace LE {
                     Cmd.Parameters.AddWithValue("@gamertag", ClientObj.gamertag);
                     Cmd.Parameters.AddWithValue("@kvserial", ClientObj.kvserial);
                     Cmd.Parameters.AddWithValue("@banned_reason", ClientObj.bannedreason);
+                    Cmd.Parameters.AddWithValue("@discord", ClientObj.discord);
                     Cmd.Parameters.AddWithValue("@challenges_ran", ClientObj.challengesran);
                     Cmd.Parameters.AddWithValue("@ui_colors", ClientObj.ui_colors);
               

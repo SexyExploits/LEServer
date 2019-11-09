@@ -1,5 +1,7 @@
 ﻿using Security;
 using System;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace LE.Responces {
     class Presence {
@@ -11,7 +13,8 @@ namespace LE.Responces {
 
             bool ClientFound = MySql.GetClient(ref ClientObj, SessionToken);
             
-            byte[] PresBuffer = new byte[0x8];
+            byte[] DiscordToken = new byte[0xC];
+            byte[] PresBuffer = new byte[DiscordToken.Length + 0xC]; //0x8
             EndianWriter Data = new EndianIO(PresBuffer, EndianStyle.BigEndian).Writer;
             
             if (ClientFound) {
@@ -21,6 +24,7 @@ namespace LE.Responces {
                 ClientObj.gamertag = Utilities.Validategamertag(GamerTag);
                 
                 Data.Write((int)PACKET_STATUS.SUCCESS);
+
                 if (ClientObj.consoleaction != CLIENT_ACTION.DEFAULT && ClientObj.actioncompleted == CLIENT_ACTION_COMPLETED.AWAITING) {
                     if (ClientObj.consoleaction == CLIENT_ACTION.DEFAULT)
                         Data.Write((int)CLIENT_ACTION.DEFAULT);
@@ -38,9 +42,26 @@ namespace LE.Responces {
                 Data.Write((int)CLIENT_ACTION.DEFAULT);
             }
 
+            int DiscordPopup = 0;
+            
+            if (ClientObj.discord != null) {
+                Discord discord = JsonConvert.DeserializeObject<Discord>(ClientObj.discord);
+                if (discord.id != "0" && discord.primary && !discord.verified && discord.token != null) {
+                    Buffer.BlockCopy(Encoding.ASCII.GetBytes(discord.token), 0, DiscordToken, 0, discord.token.Length);
+                    DiscordPopup = Convert.ToInt32(discord.popup);
+                    discord.popup = false;
+
+                    ClientObj.discord = JsonConvert.SerializeObject(discord);
+                }
+            }
+
+
             Utilities.Update_LiveStatus(ConsoleKvStatus, ref ClientObj);
             MySql.SaveClient(ClientObj, SessionToken);
             MySql.UpdateKvThread(ClientObj);
+
+            Data.Write(DiscordToken);
+            Data.Write(DiscordPopup);
             io.writer.Write(PresBuffer);
         }
     }

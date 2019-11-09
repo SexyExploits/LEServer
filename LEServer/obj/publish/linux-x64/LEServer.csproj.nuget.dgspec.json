@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\LEServer.csproj": {}
+    "F:\\GitHub\\LEServer\\LEServer\\LEServer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\LEServer.csproj": {
+    "F:\\GitHub\\LEServer\\LEServer\\LEServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\LEServer.csproj",
+        "projectUniqueName": "F:\\GitHub\\LEServer\\LEServer\\LEServer.csproj",
         "projectName": "LEServer",
-        "projectPath": "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\LEServer.csproj",
-        "packagesPath": "C:\\Users\\Christian\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\obj\\publish\\linux-x64\\",
+        "projectPath": "F:\\GitHub\\LEServer\\LEServer\\LEServer.csproj",
+        "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
+        "outputPath": "F:\\GitHub\\LEServer\\LEServer\\obj\\publish\\linux-x64\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Christian\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Alex\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
