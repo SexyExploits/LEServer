@@ -181,7 +181,13 @@ namespace LE {
                         Responces.Games.ProcessPatches(ioData, ref ClientObj);
                         if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
 
-                    }   else {
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_CPI) {
+                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        Responces.CPI.ProcessCPI(ioData, ref ClientObj);
+                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else {
                         FireWallBanEvent(IP, "Requested Invalid Response");
                     }
                 } else {

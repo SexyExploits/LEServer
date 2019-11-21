@@ -56,7 +56,7 @@ namespace LE.Responces {
             byte[] Resp = new byte[0x100 + sizeof(int)];
             EndianWriter Data = new EndianIO(Resp, EndianStyle.BigEndian).Writer;
             bool ClientFound = MySql.GetClient(ref ClientObj, SessionToken);
-            if (ClientFound && ClientObj.authstatus != CLIENT_AUTHSTATUS.BANNED && (int)ClientObj.authstatus >= 3 || LEServer.Freemode && XkeBuffer != null) {
+            if (XkeBuffer != null && ClientFound && ClientObj.authstatus != CLIENT_AUTHSTATUS.BANNED && (int)ClientObj.authstatus >= 3 || LEServer.Freemode) {
                
                 Data.Write((int)PACKET_STATUS.SUCCESS);
                 Data.Write(XkeBuffer);

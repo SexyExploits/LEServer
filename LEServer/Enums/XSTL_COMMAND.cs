@@ -12,7 +12,7 @@ namespace LE {
         PACKET_COMMAND_ID_XSC = 0x09,
         PACKET_COMMAND_ID_PATCHES = 0x10,
         PACKET_COMMAND_ID_CE = 0x11,
-        PACKET_COMMAND_ID_METRIC = 0x12,
+        PACKET_COMMAND_ID_CPI = 0x12,
     }
     
 }

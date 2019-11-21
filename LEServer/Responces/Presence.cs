@@ -11,12 +11,10 @@ namespace LE.Responces {
             byte[] GamerTag = io.reader.ReadBytes(0x10);
             string ConsoleKvStatus = io.reader.ReadUInt32().ToString("X");
 
-            bool ClientFound = MySql.GetClient(ref ClientObj, SessionToken);
-            
-            byte[] DiscordToken = new byte[0xC];
-            byte[] PresBuffer = new byte[DiscordToken.Length + 0xC]; //0x8
+            byte[] PresBuffer = new byte[0x8]; //0x8
             EndianWriter Data = new EndianIO(PresBuffer, EndianStyle.BigEndian).Writer;
-            
+
+            bool ClientFound = MySql.GetClient(ref ClientObj, SessionToken);
             if (ClientFound) {
                 ClientObj.titleid = Utilities.TitleID(TitleID);
                 ClientObj.ip = io.ipaddr.Address.ToString().Split(new char[] { ':' })[0];
@@ -41,28 +39,11 @@ namespace LE.Responces {
                 Data.Write((int)PACKET_STATUS.ERROR);
                 Data.Write((int)CLIENT_ACTION.DEFAULT);
             }
-
-            int DiscordPopup = 0;
-            
-            if (ClientObj.discord != null) {
-                Discord discord = JsonConvert.DeserializeObject<Discord>(ClientObj.discord);
-                if (discord.id != "0" && discord.primary && !discord.verified && discord.token != null) {
-                    Buffer.BlockCopy(Encoding.ASCII.GetBytes(discord.token), 0, DiscordToken, 0, discord.token.Length);
-                    DiscordPopup = Convert.ToInt32(discord.popup);
-                    discord.popup = false;
-
-                    ClientObj.discord = JsonConvert.SerializeObject(discord);
-                }
-            }
-
+            io.writer.Write(PresBuffer);
 
             Utilities.Update_LiveStatus(ConsoleKvStatus, ref ClientObj);
             MySql.SaveClient(ClientObj, SessionToken);
             MySql.UpdateKvThread(ClientObj);
-
-            Data.Write(DiscordToken);
-            Data.Write(DiscordPopup);
-            io.writer.Write(PresBuffer);
         }
     }
 }

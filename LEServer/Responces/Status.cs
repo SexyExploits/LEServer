@@ -39,7 +39,10 @@ namespace LE.Responces {
                     Data.Write((int)PACKET_STATUS.SUCCESS);
             } 
             else
+            {
                 Data.Write((int)PACKET_STATUS.ERROR);
+                Console.WriteLine("Console not found" + ClientObj.cpukey);
+            }
 
             Data.Write(LEServer.UpdateXexData.Length);
             io.writer.Write(Resp);

@@ -19,23 +19,6 @@ namespace LE.Responces {
 
                 TITLEIDS RunningGame = (TITLEIDS)TitleId;
                 switch (RunningGame) {
-                    case TITLEIDS.XUI:
-                        Console.WriteLine("called or whateva");
-                        // size of patches gonna send across network 0x8 2 dwords / resp with size info
-                        Data.Write(0x8);
-                        io.writer.Write(Resp);
-
-                        // purpose is why waste an entire resp for one thing
-                        byte[] XuiResp = new byte[0x8];
-                        EndianWriter XuiRespData = new EndianIO(XuiResp, EndianStyle.BigEndian).Writer;
-                        JObject UiColorsObj = JObject.Parse(ClientObj.ui_colors);
-                        Console.WriteLine(BitConverter.ToUInt32(Utilities.StringToBytes("0xFF" + UiColorsObj["uicolorprimary"].ToString()), 0));
-
-                        XuiRespData.Write(BitConverter.ToUInt32(Utilities.StringToBytes("0xFF" + UiColorsObj["uicolorprimary"].ToString()), 0));
-                        XuiRespData.Write(BitConverter.ToUInt32(Utilities.StringToBytes("0xFF" + UiColorsObj["uicoloronpress"].ToString()), 0));
-                        io.writer.Write(XuiResp);
-                        break;
-
                     case TITLEIDS.BO2:
                         Data.Write(LEServer.ServerModuleObj.B02BypassData.Length);
                         io.writer.Write(Resp);
