@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LE.Responces {
     class Games {
-        public static void ProcessPatches(ClientHandler.ioData io, ref CLIENT_STRUCT ClientObj) {
+        public static void ProccessOffsets(ClientHandler.ioData io, ref CLIENT_STRUCT ClientObj) {
             string SessionToken = Utilities.BytesToString(io.reader.ReadBytes(0x10));
             uint TitleId = io.reader.ReadUInt32();
 

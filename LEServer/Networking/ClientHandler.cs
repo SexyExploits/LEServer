@@ -3,9 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Security;
-using LE;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LE {
     class ClientHandler {
@@ -91,7 +89,7 @@ namespace LE {
             serverStream ServerStream = new serverStream(NetStream);
             
             try {
-                Console.WriteLine(IP + " Connected!");
+               // Console.WriteLine(IP + " Connected!");
 
                 byte[] TmpDataHeader = new byte[0x8];
                 if (!NetStream.CanRead|| NetStream.Read(TmpDataHeader, 0, 0x8) != 0x8) {
@@ -176,9 +174,9 @@ namespace LE {
                         Responces.SuperVisor.ProcessXSC(ioData, ref ClientObj);
                         if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
 
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_PATCHES) {
+                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_OFFSETS) {
                         if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
-                        Responces.Games.ProcessPatches(ioData, ref ClientObj);
+                        Responces.Games.ProccessOffsets(ioData, ref ClientObj);
                         if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
 
                     }
