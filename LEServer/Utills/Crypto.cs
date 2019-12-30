@@ -2,6 +2,26 @@
 using System.Security.Cryptography;
 
     public static class Crypto {
+
+         public static void Aes_Ecb(ref byte[] input, byte[] key, bool protect) {
+            var aesAlg = new AesManaged {
+                KeySize = 128,
+                Key = key,
+                BlockSize = 128,
+                Mode = CipherMode.ECB,
+                Padding = PaddingMode.Zeros,
+                IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+            };
+
+            if (protect) {
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                input = encryptor.TransformFinalBlock(input, 0, input.Length);
+            } else {
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+                input = decryptor.TransformFinalBlock(input, 0, input.Length);
+             }
+        }
+
         public static string Base64Encode(string plainText) {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
 
@@ -22,19 +42,17 @@ using System.Security.Cryptography;
             byte[] data = Data;
 
             for (int i = 0; i < data.Length; i++)
-            data[i] = (byte)(data[i] ^ Key[0]);
+                data[i] = (byte)(data[i] ^ Key[0]);
 
             return data;
         }
         
         public static byte[] HMACSHA1(byte[] Data, byte[] Key, int Offset) {
-
             byte[] destinationArray = new byte[Data.Length];
             Array.Copy(Data, Offset, destinationArray, 0, Data.Length);
 
             byte[] array = new HMACSHA1(Key).ComputeHash(destinationArray);
             Array.Resize(ref array, 0x10);
-
             return array;
         }
 
@@ -64,11 +82,9 @@ using System.Security.Cryptography;
         }
 
         public static void RC4(ref byte[] Data, byte[] Key) {
-
             byte num;
             int num2;
             int index = 0;
-
             byte[] buffer = new byte[0x100];
             byte[] buffer2 = new byte[0x100];
 
@@ -83,9 +99,7 @@ using System.Security.Cryptography;
                 buffer[num2] = buffer[index];
                 buffer[index] = num;
             }
-
             num2 = index = 0;
-
             for (int i = 0; i < Data.GetLength(0); i++) {
                 num2 = (num2 + 1) % 0x100;
                 index = (index + buffer[num2]) % 0x100;
@@ -131,7 +145,6 @@ using System.Security.Cryptography;
 
             if (r5 != 0) {
                 for (int i = r5; i > 0; i--) {
-
                     ulong num8 = loadDouble(ref r4, address);
                     inputLong = num8 + num4;
                     num4 = 1L;
@@ -170,12 +183,10 @@ using System.Security.Cryptography;
         SHA1.TransformBlock(inputBuffer, 0, 0x20, null, 0);
         SHA1.TransformBlock(Data, 0, r4, null, 0);
 
-        for (int i = 0; i < 0x20; i++) {
+        for (int i = 0; i < 0x20; i++)
             inputBuffer[i] = inputBuffer[i];
-        }
         SHA1.TransformBlock(inputBuffer, 0, 0x20, null, 0);
         SHA1.TransformFinalBlock(inputBuffer, 0, 0x20);
-
         return SHA1.Hash;
     }
     
@@ -185,10 +196,8 @@ using System.Security.Cryptography;
         int num2 = 0;
 
         for (int i = 0; i < (input.Length / 8); i++) {
-
-            for (int j = 0; j < 8; j++) {
+            for (int j = 0; j < 8; j++)
                 buffer[num2 + j] = input[num + j];
-            }
             num -= 8;
             num2 += 8;
         }

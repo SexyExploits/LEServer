@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading;
 
 namespace LE {
@@ -17,11 +18,11 @@ namespace LE {
         public static string LogPath = "Logs/" + "Console_Report " + DateTime.Now.ToString("M-d-yyyy") + ".log";
         public static MODULE_STRUCT ServerModuleObj = new MODULE_STRUCT();
 
-       private static void EncryptIp(byte[] IP) {
+        private static void EncryptIp(byte[] IP) {
             byte[] rawData = {
-            0xFF, 0xAF, 0xA5, 0xE8, 0x1E, 0xFB, 0xB0, 0x8F, 0xB4, 0xFF, 0xC5, 0x99,
-            0xE8, 0x53, 0x95, 0xCB, 0xE1, 0x23, 0xFD, 0x46
-       };
+                0xFF, 0xAF, 0xA5, 0xE8, 0x1E, 0xFB, 0xB0, 0x8F, 0xB4, 0xFF, 0xC5, 0x99,
+                0xE8, 0x53, 0x95, 0xCB, 0xE1, 0x23, 0xFD, 0x46
+        };
             Crypto.RC4(ref IP, rawData);
             Console.WriteLine("IP:" + Utilities.BytesToString(IP));
             Console.ReadLine();
@@ -39,7 +40,10 @@ namespace LE {
             Console.WriteLine("Encrypted Port: "+ (Port ^= x));
             Console.ReadLine();
         }
+      
 
+        private static byte[] Data = { 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
+        private static byte[] Key = { 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99 };
         static void Main(string[] Args) {
 
             //byte[] IP = { 192,99,71,19 };

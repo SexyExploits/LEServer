@@ -20,7 +20,8 @@ namespace LE {
                 Log.Add(BanEventId, ConsoleColor.Red, "Status:", Status);
                 Log.Print(BanEventId);
 
-            } else {
+            }
+            else {
                 string Status = Utilities.WindowscmdExec(string.Format("netsh advfirewall firewall delete rule name=\"" +
                "LEmulation_Reason:{1}_InstancePort:{2} @{0}\"", ip, Reason, LEServer.Port));
 
@@ -30,14 +31,14 @@ namespace LE {
                 Log.Add(ReleaseEventId, ConsoleColor.Green, "Status:", Status);
                 Log.Print(ReleaseEventId);
             }
-            
+
         }
 
         public static int MaxSendRec = 2048;
         private Thread thread_listen;
         private bool ServerRunning;
         private TcpListener listener = null;
-        
+
         public ClientHandler() {
             listener = new TcpListener(IPAddress.Any, LEServer.Port);
         }
@@ -55,12 +56,12 @@ namespace LE {
             io.writer.Close();
             io.client.Close();
         }
-        
+
         private void ListenForClients() {
             listener.Start();
 
             while (true) {
-                if (!ServerRunning) 
+                if (!ServerRunning)
                     return;
                 if (listener.Pending()) new Thread(new ParameterizedThreadStart(HandleClientComm)).Start(listener.AcceptTcpClient());
                 Thread.Sleep(100);
@@ -72,27 +73,27 @@ namespace LE {
             ServerRunning = true;
             thread_listen.Start();
         }
-        
+
         private void HandleClientComm(object Client) {
             CLIENT_STRUCT ClientObj = new CLIENT_STRUCT();
             TOKEN_STRUCT TokenObj = new TOKEN_STRUCT();
-            
+
             TcpClient TcpClient = (TcpClient)Client;
             TcpClient.SendBufferSize = MaxSendRec;
             TcpClient.ReceiveBufferSize = MaxSendRec;
             TcpClient.NoDelay = true;
 
             IPEndPoint IP_EndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
-            string IP = TcpClient.Client.RemoteEndPoint.ToString().Split(new char[] {':' })[0];
+            string IP = TcpClient.Client.RemoteEndPoint.ToString().Split(new char[] { ':' })[0];
 
             NetworkStream NetStream = TcpClient.GetStream();
             serverStream ServerStream = new serverStream(NetStream);
-            
+
             try {
-               // Console.WriteLine(IP + " Connected!");
+                // Console.WriteLine(IP + " Connected!");
 
                 byte[] TmpDataHeader = new byte[0x8];
-                if (!NetStream.CanRead|| NetStream.Read(TmpDataHeader, 0, 0x8) != 0x8) {
+                if (!NetStream.CanRead || NetStream.Read(TmpDataHeader, 0, 0x8) != 0x8) {
                     TcpClient.Close();
                     return;
                 }
@@ -126,74 +127,101 @@ namespace LE {
                 if (ioData.payloadSize > 0) {
                     if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_AUTH) {
                         int Start = DateTime.Now.Second;
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.Auth.ProcessAuthorization(ioData, ref ClientObj);
                         int End = (DateTime.Now.Second - Start);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Completed in: {2} seconds", CommandID, ioData.ipaddr.ToString(), End);
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_TIME) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Completed in: {2} seconds", CommandID, ioData.ipaddr.ToString(), End);
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_TIME) {
                         int Start = DateTime.Now.Second;
-
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.TimeUpdate.ProcessTime(ioData, ref ClientObj);
                         int End = (DateTime.Now.Second - Start);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Completed in {2} seconds", CommandID, ioData.ipaddr.ToString(), End);
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_STATUS) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Completed in {2} seconds", CommandID, ioData.ipaddr.ToString(), End);
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_STATUS) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.Status.ProcessStatus(ioData, ref ClientObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_PRES) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_PRES) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.Presence.ProcessPresence(ioData, ref ClientObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_SECURITY) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_SECURITY) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.Security.ProcessSecurity(ioData, ref ClientObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_TOKEN_CHECK) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_TOKEN_CHECK) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.Token.ProcessVerifyTkn(ioData, ref ClientObj, ref TokenObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_TOKEN_REDEEM) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_TOKEN_REDEEM) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.Token.ProcessRedeemTkn(ioData, ref ClientObj, ref TokenObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_XKE) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_XKE) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.XKE.ProcessXKE(ioData, ref ClientObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_XSC) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_XSC) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.SuperVisor.ProcessXSC(ioData, ref ClientObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
-                    } else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_OFFSETS) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_OFFSETS) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.Games.ProccessOffsets(ioData, ref ClientObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
-
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
                     }
                     else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_CPI) {
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
                         Responces.CPI.ProcessCPI(ioData, ref ClientObj);
-                        if (LEServer.DebugModePrints) Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
                     }
-                    else {
+                    else if (CommandID == PACKET_COMMAND.PACKET_COMMAND_ID_SETTINGS) {
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0}", CommandID, ioData.ipaddr.ToString());
+                        Responces.Settings.ProccessSettings(ioData, ref ClientObj);
+                        if (LEServer.DebugModePrints)
+                            Console.WriteLine("@{1} - Command Id: {0} Passed!", CommandID, ioData.ipaddr.ToString());
+                    }
+                    else
                         FireWallBanEvent(IP, "Requested Invalid Response");
-                    }
-                } else {
-                    FireWallBanEvent(IP, "Invalid Payload Size");
                 }
+                else
+                    FireWallBanEvent(IP, "Invalid Payload Size");
 
                 DisconnectClient(ioData);
-            } catch (Exception Ex) {
+            }
+            catch (Exception Ex) {
                 List<Log.PrintQueue> HandleServCommErrorid = Log.GetQueue();
                 Log.Add(HandleServCommErrorid, ConsoleColor.Red, "ERROR", null);
                 Log.Add(HandleServCommErrorid, ConsoleColor.Red, "Exception Message:", Ex.Message);

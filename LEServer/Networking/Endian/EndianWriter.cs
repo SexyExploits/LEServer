@@ -71,6 +71,18 @@ namespace Security {
             base.Write(bytes);
         }
 
+        public override void Write(bool value)
+        {
+            this.Write(value, this._endianStyle);
+        }
+
+        public void Write(bool value, EndianStyle EndianStyle)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            if (EndianStyle == EndianStyle.BigEndian) Array.Reverse(bytes);
+            base.Write(bytes);
+        }
+
         public void Write(short value, EndianStyle EndianStyle)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -101,21 +113,17 @@ namespace Security {
             base.Write(bytes);
         }
 
-        public void Write(float value, EndianStyle EndianStyle)
-        {
+        public void Write(float value, EndianStyle EndianStyle) {
             byte[] bytes = BitConverter.GetBytes(value);
-            if (EndianStyle == EndianStyle.BigEndian)
-            {
+            if (EndianStyle == EndianStyle.BigEndian) {
                 Array.Reverse(bytes);
             }
             base.Write(bytes);
         }
 
-        public void Write(ushort value, EndianStyle EndianStyle)
-        {
+        public void Write(ushort value, EndianStyle EndianStyle) {
             byte[] bytes = BitConverter.GetBytes(value);
-            if (EndianStyle == EndianStyle.BigEndian)
-            {
+            if (EndianStyle == EndianStyle.BigEndian) {
                 Array.Reverse(bytes);
             }
             base.Write(bytes);

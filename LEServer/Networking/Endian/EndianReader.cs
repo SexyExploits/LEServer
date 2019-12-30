@@ -14,6 +14,17 @@ namespace Security {
             return ReadDouble(_endianStyle);
         }
 
+        public override bool ReadBoolean() {
+            return this.ReadBoolean(this._endianStyle);
+        }
+
+        public bool ReadBoolean(EndianStyle EndianStyle) {
+            byte[] array = base.ReadBytes(1);
+            if (EndianStyle == EndianStyle.BigEndian) 
+                Array.Reverse(array);
+            return BitConverter.ToBoolean(array, 0);
+        }
+
         public double ReadDouble(EndianStyle EndianStyle) {
             byte[] array = base.ReadBytes(8);
             if (EndianStyle == EndianStyle.BigEndian) {

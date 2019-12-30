@@ -23,26 +23,27 @@ namespace LE {
             stream.Flush();  
         }
         
-        public override int Read(byte[] buffer, int offset, int count) {
-            byte[] Data = new byte[count];
-            int num = stream.Read(Data, 0, count);
-            while (num != count) {
-                int num2 = stream.Read(Data, num, count - num);
+        public override int Read(byte[] buffer, int Offset, int Count) {
+            byte[] Data = new byte[Count];
+            int num = stream.Read(Data, 0, Count);
+            while (num != Count) {
+                int num2 = stream.Read(Data, num, Count - num);
                 if (num2 <= 0) 
                     break;
                 num += num2;
             }
-            
+
+            Crypto.Aes_Ecb(ref Data, ServerEncryptionKey, false);
             Crypto.RC4(ref Data, ServerEncryptionKey);
             Array.Reverse(Data);
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < Count; i++)
                 Data[i] ^= (byte)0x31;
 
             Crypto.RC4(ref Data, MasterKey);
             Array.Reverse(Data);
-            
-            Buffer.BlockCopy(Data, 0, buffer, offset, num);
+
+            Buffer.BlockCopy(Data, 0, buffer, Offset, num);
             return num;
         }
 
@@ -58,6 +59,7 @@ namespace LE {
             byte[] Data = new byte[count];
             Buffer.BlockCopy(buffer, offset, Data, 0, count);
 
+            //Crypto.Aes_Ecb(ref Data, ServerEncryptionKey, true);
             Crypto.RC4(ref Data, ServerEncryptionKey);
             Array.Reverse(Data);
 
@@ -78,7 +80,6 @@ namespace LE {
                 else {
                     Buffer.BlockCopy(Data, (i * ClientHandler.MaxSendRec), tmp, 0, Remaining);
                     stream.Write(tmp, 0, Remaining);
-
                 }
             }
         }

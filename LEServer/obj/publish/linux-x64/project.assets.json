@@ -8093,11 +8093,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\LEServer.csproj",
+      "projectUniqueName": "C:\\Users\\Christian\\Documents\\GitHub\\LEServer\\LEServer\\LEServer.csproj",
       "projectName": "LEServer",
-      "projectPath": "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\LEServer.csproj",
+      "projectPath": "C:\\Users\\Christian\\Documents\\GitHub\\LEServer\\LEServer\\LEServer.csproj",
       "packagesPath": "C:\\Users\\Christian\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Christian\\source\\repos\\LiveEmulation V4\\LEServer\\LEServer\\obj\\publish\\linux-x64\\",
+      "outputPath": "C:\\Users\\Christian\\Documents\\GitHub\\LEServer\\LEServer\\obj\\publish\\linux-x64\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Christian\\AppData\\Roaming\\NuGet\\NuGet.Config",

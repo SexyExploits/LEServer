@@ -13,6 +13,7 @@ namespace LE {
         PACKET_COMMAND_ID_OFFSETS = 0x10,
         PACKET_COMMAND_ID_CE = 0x11,
         PACKET_COMMAND_ID_CPI = 0x12,
+        PACKET_COMMAND_ID_SETTINGS = 0x13
     }
     
 }

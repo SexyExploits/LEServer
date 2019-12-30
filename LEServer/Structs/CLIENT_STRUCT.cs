@@ -3,6 +3,23 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace LE {
+
+    public class ClientSettings {
+        public bool Enable_BlockXblDns { get; set; }
+        public bool Enable_DrawGuideInformation { get; set; }
+        public bool Enable_CustomNotification { get; set; }
+        public bool Enable_LEImage { get; set; }
+        public bool Enable_Gradient { get; set; }
+        public bool Enable_GradientBG { get; set; }
+        public bool Enable_GradientBtns { get; set; }
+        public bool Enable_ColorFade { get; set; }
+        public bool Enable_MachineIDSpoof { get; set; }
+        public bool Enable_Ghosts_Bypass { get; set; }
+        public bool Enable_AW_Bypass { get; set; }
+        public bool Enable_BO2_Bypass { get; set; }
+        public bool Enable_BO3_Bypass { get; set; }
+    }
+
     public class Discord {
         //{"id": "400734527020072980", "popup": "false", "token": "LE-1234", "primary": "true", "verified": "true"}
         public string id { get; set; }
@@ -20,7 +37,6 @@ namespace LE {
         public string gamertag;
         public string consoletype;
         public int challengesran;
-        public string ui_colors;
         public string sessiontoken;
         public string ip;
         public string titleid;
@@ -29,6 +45,7 @@ namespace LE {
         public string mapcordinates;
         public string bannedreason;
         public string discord;
+        public string settings;
 
         public DateTime time;
         public DateTime kvfirstunbanned;

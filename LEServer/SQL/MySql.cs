@@ -11,8 +11,8 @@ namespace LE {
             using (var DbCon = DbConnection.SetupConnection()) {
                 DbConnection.Connect(DbCon);
                 using (var Cmd = DbCon.CreateCommand()) {
-                    Cmd.Parameters.AddWithValue("@kvserial", ClientObj.kvserial);
-                    Cmd.CommandText = string.Format("SELECT COUNT(*) FROM clients WHERE kvserial=@kvserial");
+                    Cmd.Parameters.AddWithValue("@kv_serial", ClientObj.kvserial);
+                    Cmd.CommandText = string.Format("SELECT COUNT(*) FROM clients WHERE kv_serial=@kv_serial");
                     ConsolesFoundOnKv = Convert.ToInt32(Cmd.ExecuteScalar());
                 }
                 DbCon.Close();
@@ -25,10 +25,10 @@ namespace LE {
                 using (var DbCon = DbConnection.SetupConnection()) {
                     DbConnection.Connect(DbCon);
                     using (var Cmd = DbCon.CreateCommand()) {
-                        Cmd.CommandText = string.Format("UPDATE clients SET kvfirst_unbanned=@kvfirst_unbanned, kvserial=@kvserial WHERE cpukey=@cpukey");
+                        Cmd.CommandText = string.Format("UPDATE clients SET kv_first_unbanned=@kv_first_unbanned, kv_serial=@kv_serial WHERE cpukey=@cpukey");
                         Cmd.Parameters.AddWithValue("@cpukey", ClientObj.cpukey);
-                        Cmd.Parameters.AddWithValue("@kvfirst_unbanned", DateTime.Now);
-                        Cmd.Parameters.AddWithValue("@kvserial", ClientObj.kvserial);
+                        Cmd.Parameters.AddWithValue("@kv_first_unbanned", DateTime.Now);
+                        Cmd.Parameters.AddWithValue("@kv_serial", ClientObj.kvserial);
                         Cmd.ExecuteNonQuery();
 
                         DbCon.Close();
@@ -44,10 +44,10 @@ namespace LE {
                 using (var DbCon = DbConnection.SetupConnection()) {
                     DbConnection.Connect(DbCon);
                     using (var Cmd = DbCon.CreateCommand()) {
-                        Cmd.CommandText = string.Format("UPDATE clients SET kvfirst_unbanned=@kvfirst_unbanned WHERE cpukey=@CpuKey");
+                        Cmd.CommandText = string.Format("UPDATE clients SET kv_first_unbanned=@kv_first_unbanned WHERE cpukey=@cpukey");
                         DateTime resetunbantime = new DateTime(2009, 07, 08, 02, 30, 30);
-                        Cmd.Parameters.AddWithValue("@kvfirst_unbanned", resetunbantime);
-                        Cmd.Parameters.AddWithValue("@CpuKey", ClientObj.cpukey);
+                        Cmd.Parameters.AddWithValue("@kv_first_unbanned", resetunbantime);
+                        Cmd.Parameters.AddWithValue("@cpukey", ClientObj.cpukey);
                         Cmd.ExecuteNonQuery();
 
                         DbCon.Close();
@@ -66,10 +66,10 @@ namespace LE {
                 using (var DbCon = DbConnection.SetupConnection()) {
                     DbConnection.Connect(DbCon);
                     using (var Cmd = DbCon.CreateCommand()) {
-                        Cmd.CommandText = string.Format("UPDATE clients SET kvfirst_unbanned=@kvfirst_unbanned WHERE cpukey=@CpuKey");
+                        Cmd.CommandText = string.Format("UPDATE clients SET kv_first_unbanned=@kv_first_unbanned WHERE cpukey=@cpukey");
                         DateTime resetunbantime = new DateTime(2009, 07, 08, 02, 30, 30);
-                        Cmd.Parameters.AddWithValue("@kvfirst_unbanned", resetunbantime);
-                        Cmd.Parameters.AddWithValue("@CpuKey", ClientObj.cpukey);
+                        Cmd.Parameters.AddWithValue("@kv_first_unbanned", resetunbantime);
+                        Cmd.Parameters.AddWithValue("@cpukey", ClientObj.cpukey);
 
                         Cmd.ExecuteNonQuery();
                         DbCon.Close();
@@ -240,31 +240,31 @@ namespace LE {
             using (var DbCon = DbConnection.SetupConnection()) {
                 DbConnection.Connect(DbCon);
                 using (var Cmd = DbCon.CreateCommand()) {
-                    Cmd.CommandText = string.Format("SELECT * FROM clients WHERE (cpukey=@key OR sessionkey=@key)");
+                    Cmd.CommandText = string.Format("SELECT * FROM clients WHERE (cpukey=@key OR session_key=@key)");
                     Cmd.Parameters.AddWithValue("@key", Key);
                     using (var Reader = Cmd.ExecuteReader())
 
                         if (Reader.Read()) {
-                            ClientObj.sessiontoken = (string)Reader["sessionkey"];
+                            ClientObj.sessiontoken = (string)Reader["session_key"];
                             ClientObj.cpukey = (string)Reader["cpukey"];
                             ClientObj.online = (bool)Reader["online"];
                             ClientObj.authstatus = (CLIENT_AUTHSTATUS)Reader["auth_status"];
                             ClientObj.ip = (string)Reader["ip"];
                             ClientObj.time = (DateTime)Reader["time"];
-                            ClientObj.kvfirstunbanned = (DateTime)Reader["kvfirst_unbanned"];
+                            ClientObj.kvfirstunbanned = (DateTime)Reader["kv_first_unbanned"];
                             ClientObj.lastloginTime = (DateTime)Reader["last_login"];
                             ClientObj.consoletype = (string)Reader["console_type"];
                             ClientObj.gamertag = (string)Reader["gamertag"];
                             ClientObj.mapcordinates = (string)Reader["map_cordinates"];
-                            ClientObj.kvserial = (string)Reader["kvserial"];
+                            ClientObj.kvserial = (string)Reader["kv_serial"];
                             ClientObj.consoleaction = (CLIENT_ACTION)Reader["console_action"];
                             ClientObj.actioncompleted = (CLIENT_ACTION_COMPLETED)Reader["action_completed"];
-                            ClientObj.kvstatus = (CLIENT_KVSTATUS)Reader["kvstatus"];
+                            ClientObj.kvstatus = (CLIENT_KVSTATUS)Reader["kv_status"];
                             ClientObj.bannedreason = (string)Reader["banned_reason"];
                             ClientObj.discord = (string)Reader["discord"];
-                            ClientObj.titleid = (string)Reader["titleid"];
+                            ClientObj.titleid = (string)Reader["title_id"];
                             ClientObj.challengesran = (int)Reader["challenges_ran"];
-                            ClientObj.ui_colors = (string)Reader["ui_colors"];
+                            ClientObj.settings = (string)Reader["settings"];
                             DbCon.Close();
                             if (Countconsolesusingcpu(ClientObj) > 1)
                                 BanClient(ClientObj);
@@ -280,17 +280,17 @@ namespace LE {
             using (var DbCon = DbConnection.SetupConnection()) {
                 DbConnection.Connect(DbCon);
                 using (var Cmd = DbCon.CreateCommand()) {
-                    Cmd.CommandText = "INSERT INTO clients (cpukey, auth_status, time, sessionkey, ui_colors, discord) VALUES (@cpukey, @auth_status, @time, @sessionkey, @ui_colors, @discord)";
+                    Cmd.CommandText = "INSERT INTO clients (cpukey, auth_status, time, session_key, settings, discord) VALUES (@cpukey, @auth_status, @time, @session_key, @settings, @discord)";
 
-                    Cmd.Parameters.AddWithValue("@CpuKey", Cpukey);
+                    Cmd.Parameters.AddWithValue("@cpukey", Cpukey);
                     Cmd.Parameters.AddWithValue("@auth_status", CLIENT_AUTHSTATUS.NOTIME);
                     Cmd.Parameters.AddWithValue("@time", DateTime.Now);
-                    Cmd.Parameters.AddWithValue("@sessionkey", SessionKey);
+                    Cmd.Parameters.AddWithValue("@session_key", SessionKey);
 
-                    JObject UiColors = new JObject();
-                    UiColors.Add("uicolorprimary", "0a7562");
-                    UiColors.Add("uicoloronpress", "0fb391");
-                    Cmd.Parameters.AddWithValue("@ui_colors", JsonConvert.SerializeObject(UiColors));
+                    JObject Settings = new JObject();
+                    Settings.Add("uicolorprimary", "0a7562");
+                    Settings.Add("uicoloronpress", "0fb391");
+                    Cmd.Parameters.AddWithValue("@settings", JsonConvert.SerializeObject(Settings));
 
                     JObject DiscordObj = new JObject();
                     DiscordObj.Add("id", "0");
@@ -358,27 +358,27 @@ namespace LE {
                 DbConnection.Connect(DbCon);
                 using (var Cmd = DbCon.CreateCommand()) {
                     Cmd.CommandTimeout = 10;
-                    Cmd.CommandText = string.Format("UPDATE clients SET sessionkey=@sessionkey, time=@time, last_login=@last_login, online=@online, auth_status=@auth_status, kvstatus=@kvstatus, ip=@ip, titleid=@titleid, console_type=@console_type, gamertag=@gamertag, kvserial=@kvserial, map_cordinates=@map_cordinates, banned_reason=@banned_reason, discord=@discord, challenges_ran=@challenges_ran, ui_colors=@ui_colors WHERE (cpukey=@key OR sessionkey=@key)");
+                    Cmd.CommandText = string.Format("UPDATE clients SET session_key=@session_key, time=@time, last_login=@last_login, online=@online, auth_status=@auth_status, kv_status=@kv_status, ip=@ip, title_id=@title_id, console_type=@console_type, gamertag=@gamertag, kv_serial=@kv_serial, map_cordinates=@map_cordinates, banned_reason=@banned_reason, discord=@discord, challenges_ran=@challenges_ran, settings=@settings WHERE (cpukey=@key OR session_key=@key)");
                     Cmd.Parameters.AddWithValue("@cpukey", ClientObj.cpukey);
-                    Cmd.Parameters.AddWithValue("@sessionkey", ClientObj.sessiontoken);
+                    Cmd.Parameters.AddWithValue("@session_key", ClientObj.sessiontoken);
                     Cmd.Parameters.AddWithValue("@time", ClientObj.time);
                     Cmd.Parameters.AddWithValue("@last_login", DateTime.Now);
                     Cmd.Parameters.AddWithValue("@auth_status", ClientObj.authstatus);
-                    Cmd.Parameters.AddWithValue("@kvstatus", ClientObj.kvstatus);
+                    Cmd.Parameters.AddWithValue("@kv_status", ClientObj.kvstatus);
                     Cmd.Parameters.AddWithValue("@online", true);
                     Cmd.Parameters.AddWithValue("@ip", ClientObj.ip);
                     Cmd.Parameters.AddWithValue("@console_type", ClientObj.consoletype);
                     Cmd.Parameters.AddWithValue("@gamertag", ClientObj.gamertag);
-                    Cmd.Parameters.AddWithValue("@kvserial", ClientObj.kvserial);
+                    Cmd.Parameters.AddWithValue("@kv_serial", ClientObj.kvserial);
                     Cmd.Parameters.AddWithValue("@banned_reason", ClientObj.bannedreason);
                     Cmd.Parameters.AddWithValue("@discord", ClientObj.discord);
                     Cmd.Parameters.AddWithValue("@challenges_ran", ClientObj.challengesran);
-                    Cmd.Parameters.AddWithValue("@ui_colors", ClientObj.ui_colors);
+                    Cmd.Parameters.AddWithValue("@settings", ClientObj.settings);
               
                     if (ClientObj.titleid == null)
-                        Cmd.Parameters.AddWithValue("@titleid", "Dashboard");
+                        Cmd.Parameters.AddWithValue("@title_id", "Dashboard");
                     else
-                        Cmd.Parameters.AddWithValue("@titleid", ClientObj.titleid);
+                        Cmd.Parameters.AddWithValue("@title_id", ClientObj.titleid);
 
                     if (ClientObj.mapcordinates == null)
                         Cmd.Parameters.AddWithValue("@map_cordinates", " ");
@@ -398,7 +398,7 @@ namespace LE {
             using (var dbcon = DbConnection.SetupConnection()) {
                 DbConnection.Connect(dbcon);
                 using (var Cmd = dbcon.CreateCommand()) {
-                    Cmd.CommandText = string.Format("UPDATE clients SET auth_status=1, banned_reason=@banned_reason WHERE cpukey=@cpukey;");
+                    Cmd.CommandText = string.Format("UPDATE clients SET auth_status = 1, banned_reason=@banned_reason WHERE cpukey=@cpukey;");
                     Cmd.Parameters.AddWithValue("@cpukey", ClientObj.cpukey);
                     Cmd.Parameters.AddWithValue("@banned_reason", reason);
                     Cmd.ExecuteNonQuery();
